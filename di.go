@@ -7,6 +7,7 @@ import (
 	"league/match"
 	"league/spectator"
 	"league/summoner"
+	"league/timeline"
 )
 
 type di struct {
@@ -16,6 +17,7 @@ type di struct {
 	summoner  summoner.Summoner
 	spectator spectator.Spectator
 	match match.Match
+	timeline timeline.Timeline
 }
 
 func newDI(configPath string) (*di, error) {
@@ -34,6 +36,7 @@ func newDI(configPath string) (*di, error) {
 	di.summoner = summoner.New(di.http)
 	di.spectator = spectator.New(di.http)
 	di.match = match.New(di.http)
+	di.timeline = timeline.New(di.http)
 
 	return di, nil
 }

@@ -2,50 +2,50 @@ package spectator
 
 type (
 	DTO struct {
-		GameID            int64                    `json:"gameId"`
-		GameStartTime     int64                    `json:"gameStartTime"`
-		PlatformID        string                   `json:"platformId"`
-		GameMode          string                   `json:"gameMode"`
-		MapID             int64                    `json:"mapId"`
-		GameType          string                   `json:"gameType"`
-		BannedChampions   []BannedChampion         `json:"bannedChampions"`
-		Observers         Observer                 `json:"observers"`
-		Participants      []CurrentGameParticipant `json:"participants"`
-		GameLength        int64                    `json:"gameLength"`
-		GameQueueConfigId int64                    `json:"gameQueueConfigId"`
+		GameID            int64                    `json:"gameId,omitempty"`
+		GameStartTime     int64                    `json:"gameStartTime,omitempty"`
+		PlatformID        string                   `json:"platformId,omitempty"`
+		GameMode          string                   `json:"gameMode,omitempty"`
+		MapID             int64                    `json:"mapId,omitempty"`
+		GameType          string                   `json:"gameType,omitempty"`
+		BannedChampions   []BannedChampion         `json:"bannedChampions,omitempty"`
+		Observers         Observer                 `json:"observers,omitempty"`
+		Participants      []CurrentGameParticipant `json:"participants,omitempty"`
+		GameLength        int64                    `json:"gameLength,omitempty"`
+		GameQueueConfigId int64                    `json:"gameQueueConfigId,omitempty"`
 	}
 
 	BannedChampion struct {
-		PickTurn   int   `json:"pickTurn"`
-		ChampionId int64 `json:"championId"`
-		TeamID     int64 `json:"teamID"`
+		PickTurn   int   `json:"pickTurn,omitempty"`
+		ChampionId int64 `json:"championId,omitempty"`
+		TeamID     int64 `json:"teamID,omitempty"`
 	}
 
 	Observer struct {
-		EncryptionKey string `json:"encryptionKey"`
+		EncryptionKey string `json:"encryptionKey,omitempty"`
 	}
 
 	CurrentGameParticipant struct {
-		ProfileIconId            int64                     `json:"profileIconId"`
-		ChampionId               int64                     `json:"championId"`
-		SummonerName             string                    `json:"summonerName"`
-		GameCustomizationObjects []GameCustomizationObject `json:"gameCustomizationObjects"`
-		Bot                      bool                      `json:"bot"`
-		Perks                    Perks                     `json:"perks"`
-		Spell1ID                 int64                     `json:"spell1Id"`
-		Spell2ID                 int64                     `json:"spell2Id"`
-		TeamID                   int64                     `json:"teamId"`
-		SummonerID               string                    `json:"summonerId"`
+		ProfileIconId            int64                     `json:"profileIconId,omitempty"`
+		ChampionId               int64                     `json:"championId,omitempty"`
+		SummonerName             string                    `json:"summonerName,omitempty"`
+		GameCustomizationObjects []GameCustomizationObject `json:"gameCustomizationObjects,omitempty"`
+		Bot                      bool                      `json:"bot,omitempty"`
+		Perks                    Perks                     `json:"perks,omitempty"`
+		Spell1ID                 int64                     `json:"spell1Id,omitempty"`
+		Spell2ID                 int64                     `json:"spell2Id,omitempty"`
+		TeamID                   int64                     `json:"teamId,omitempty"`
+		SummonerID               string                    `json:"summonerId,omitempty"`
 	}
 
 	GameCustomizationObject struct {
-		Category string `json:"category"`
-		Content  string `json:"content"`
+		Category string `json:"category,omitempty"`
+		Content  string `json:"content,omitempty"`
 	}
 
 	Perks struct {
-		PerkStyle    int64   `json:"perkStyle"`
-		PerkIds      []int64 `json:"perkIds"`
-		PerkSubStyle int64   `json:"perkSubStyle"`
+		PerkStyle    int64   `json:"perkStyle,omitempty"`
+		PerkIds      []int64 `json:"perkIds,omitempty"`
+		PerkSubStyle int64   `json:"perkSubStyle,omitempty"`
 	}
 )

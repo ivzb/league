@@ -28,7 +28,8 @@ func main() {
 		panic(err)
 	}
 
-	prettyPrint(match)
+	timeline, err := di.timeline.ByMatch(match.Matches[0].GameId)
+	prettyPrint(timeline)
 
 	if true {
 		return
