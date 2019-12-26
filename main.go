@@ -22,6 +22,18 @@ func main() {
 		panic(err)
 	}
 
+	match, err := di.match.ByAccount(me.AccountID)
+
+	if err != nil {
+		panic(err)
+	}
+
+	prettyPrint(match)
+
+	if true {
+		return
+	}
+
 	game, err := di.spectator.BySummoner(me.ID)
 
 	if err != nil {

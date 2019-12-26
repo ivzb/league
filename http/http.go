@@ -1,36 +1,43 @@
 package http
 
 import (
-	"errors"
-	"io"
+	"fmt"
 	nhttp "net/http"
+
+	"league/config"
 )
 
-var errNewRequestFailed = errors.New("http: new request failed")
+var (
+	fmtBaseURL = "%s/%s"
+	xRiotToken = "X-Riot-Token"
+)
 
 type (
 	HTTP interface {
-		Do(method, url string, body io.Reader, headers map[string]string) (r *nhttp.Response, err error)
+		Get(url string) (r *nhttp.Response, err error)
 	}
 
 	http struct {
+		config *config.Config
 	}
 )
 
-func New() HTTP {
-	return &http{}
+func New(config *config.Config) HTTP {
+	return &http{
+		config: config,
+	}
 }
 
-func (h *http) Do(method, url string, body io.Reader, headers map[string]string) (r *nhttp.Response, err error) {
-	request, err := nhttp.NewRequest(method, url, body)
+func (h *http) Get(url string) (r *nhttp.Response, err error) {
+	url = fmt.Sprintf(fmtBaseURL, h.config.BaseURL, url)
+
+	request, err := nhttp.NewRequest(nhttp.MethodGet, url, nil)
 
 	if err != nil {
-		return nil, errNewRequestFailed
+		return nil, err
 	}
 
-	for key, value := range headers {
-		request.Header.Add(key, value)
-	}
+	request.Header.Add(xRiotToken, h.config.ApiKey)
 
 	client := &nhttp.Client{}
 

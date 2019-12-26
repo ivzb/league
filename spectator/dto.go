@@ -40,12 +40,12 @@ type (
 
 	GameCustomizationObject struct {
 		Category string `json:"category"`
-		Content string `json:"content"`
+		Content  string `json:"content"`
 	}
 
 	Perks struct {
-		PerkStyle int64 `json:"perkStyle"`
-		PerkIds []int64 `json:"perkIds"`
-		PerkSubStyle int64 `json:"perkSubStyle"`
+		PerkStyle    int64   `json:"perkStyle"`
+		PerkIds      []int64 `json:"perkIds"`
+		PerkSubStyle int64   `json:"perkSubStyle"`
 	}
 )

@@ -3,13 +3,11 @@ package spectator
 import (
 	"encoding/json"
 	"fmt"
-	nhttp "net/http"
 
-	"league/config"
 	"league/http"
 )
 
-const bySummonerPath = "lol/spectator/v4/active-games/by-summoner"
+const bySummonerPath = "lol/spectator/v4/active-games/by-summoner/%s"
 
 type (
 	Spectator interface {
@@ -17,26 +15,20 @@ type (
 	}
 
 	spectator struct {
-		config *config.Config
 		http   http.HTTP
 	}
 )
 
-func New(config *config.Config, http http.HTTP) Spectator {
+func New(http http.HTTP) Spectator {
 	return &spectator{
-		config: config,
 		http:   http,
 	}
 }
 
 func (s *spectator) BySummoner(id string) (*DTO, error) {
-	url := fmt.Sprintf("%s/%s/%s", s.config.BaseURL, bySummonerPath, id)
+	url := fmt.Sprintf(bySummonerPath, id)
 
-	headers := map[string]string{
-		"X-Riot-Token": s.config.ApiKey,
-	}
-
-	response, err := s.http.Do(nhttp.MethodGet, url, nil, headers)
+	response, err := s.http.Get(url)
 
 	if err != nil {
 		return nil, err

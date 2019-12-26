@@ -3,13 +3,11 @@ package summoner
 import (
 	"encoding/json"
 	"fmt"
-	nhttp "net/http"
 
-	"league/config"
 	"league/http"
 )
 
-const byNamePath = "lol/summoner/v4/summoners/by-name"
+const byNamePath = "lol/summoner/v4/summoners/by-name/%s"
 
 type (
 	Summoner interface {
@@ -17,26 +15,20 @@ type (
 	}
 
 	summoner struct {
-		config *config.Config
-		http http.HTTP
+		http   http.HTTP
 	}
 )
 
-func New(config *config.Config, http http.HTTP) Summoner {
+func New(http http.HTTP) Summoner {
 	return &summoner{
-		config:  config,
-		http: http,
+		http:   http,
 	}
 }
 
 func (s *summoner) ByName(name string) (*DTO, error) {
-	url := fmt.Sprintf("%s/%s/%s", s.config.BaseURL, byNamePath, name)
+	url := fmt.Sprintf(byNamePath, name)
 
-	headers := map[string]string{
-		"X-Riot-Token": s.config.ApiKey,
-	}
-
-	response, err := s.http.Do(nhttp.MethodGet, url, nil, headers)
+	response, err := s.http.Get(url)
 
 	if err != nil {
 		return nil, err
