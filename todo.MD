@@ -1,0 +1,1 @@
+check if teammates have picked their main hampion in champion select

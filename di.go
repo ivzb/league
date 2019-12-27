@@ -1,6 +1,7 @@
 package main
 
 import (
+	"league/champion"
 	"league/config"
 	"league/file"
 	"league/http"
@@ -14,10 +15,11 @@ type di struct {
 	config *config.Config
 	http   http.HTTP
 
+	champion  champion.Champion
 	summoner  summoner.Summoner
 	spectator spectator.Spectator
-	match match.Match
-	timeline timeline.Timeline
+	match     match.Match
+	timeline  timeline.Timeline
 }
 
 func newDI(configPath string) (*di, error) {
@@ -33,6 +35,7 @@ func newDI(configPath string) (*di, error) {
 	}
 
 	di.http = http.New(di.config)
+	di.champion = champion.New(di.http)
 	di.summoner = summoner.New(di.http)
 	di.spectator = spectator.New(di.http)
 	di.match = match.New(di.http)

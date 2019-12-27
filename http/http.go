@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	nhttp "net/http"
+	"strings"
 
 	"league/config"
 )
@@ -29,7 +30,9 @@ func New(config *config.Config) HTTP {
 }
 
 func (h *http) Get(url string) (r *nhttp.Response, err error) {
-	url = fmt.Sprintf(fmtBaseURL, h.config.BaseURL, url)
+	if !strings.Contains(url, "http") {
+		url = fmt.Sprintf(fmtBaseURL, h.config.BaseURL, url)
+	}
 
 	request, err := nhttp.NewRequest(nhttp.MethodGet, url, nil)
 

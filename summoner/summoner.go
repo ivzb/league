@@ -15,13 +15,13 @@ type (
 	}
 
 	summoner struct {
-		http   http.HTTP
+		http http.HTTP
 	}
 )
 
 func New(http http.HTTP) Summoner {
 	return &summoner{
-		http:   http,
+		http: http,
 	}
 }
 

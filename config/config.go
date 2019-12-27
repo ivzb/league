@@ -12,6 +12,7 @@ type (
 		BaseURL      string `json:"base_url"`
 		ApiKey       string `json:"api_key"`
 		SummonerName string `json:"summoner_name"`
+		MatchesLimit int    `json:"matches_limit"`
 	}
 )
 

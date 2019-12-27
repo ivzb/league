@@ -15,13 +15,13 @@ type (
 	}
 
 	spectator struct {
-		http   http.HTTP
+		http http.HTTP
 	}
 )
 
 func New(http http.HTTP) Spectator {
 	return &spectator{
-		http:   http,
+		http: http,
 	}
 }
 

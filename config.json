@@ -1,5 +1,6 @@
 {
   "base_url": "https://eun1.api.riotgames.com/",
-  "api_key": "RGAPI-004b36bb-a7e9-4ce4-805e-1ed1e1e9aab1",
-  "summoner_name": "ivzb"
+  "api_key": "RGAPI-f963de94-774f-4117-8177-b5e276f5ee8e",
+  "summoner_name": "ivzb",
+  "matches_limit": 5
 }
