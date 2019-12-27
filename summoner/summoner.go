@@ -1,13 +1,12 @@
 package summoner
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"league/http"
 )
 
-const byNamePath = "lol/summoner/v4/summoners/by-name/%s"
+const byNameURL = "lol/summoner/v4/summoners/by-name/%s"
 
 type (
 	Summoner interface {
@@ -26,21 +25,10 @@ func New(http http.HTTP) Summoner {
 }
 
 func (s *summoner) ByName(name string) (*DTO, error) {
-	url := fmt.Sprintf(byNamePath, name)
-
-	response, err := s.http.Get(url)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer response.Body.Close()
-
+	url := fmt.Sprintf(byNameURL, name)
 	var dto *DTO
 
-	if err := json.NewDecoder(response.Body).Decode(&dto); err != nil {
-		return nil, err
-	}
+	err := s.http.Get(url, &dto)
 
-	return dto, nil
+	return dto, err
 }

@@ -1,13 +1,12 @@
 package timeline
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"league/http"
 )
 
-const byMatchPath = "lol/match/v4/timelines/by-match/%d"
+const byMatchURL = "lol/match/v4/timelines/by-match/%d"
 
 type (
 	Timeline interface {
@@ -26,21 +25,10 @@ func New(http http.HTTP) Timeline {
 }
 
 func (t *timeline) ByMatch(id int64) (*DTO, error) {
-	url := fmt.Sprintf(byMatchPath, id)
-
-	response, err := t.http.Get(url)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer response.Body.Close()
-
+	url := fmt.Sprintf(byMatchURL, id)
 	var dto *DTO
 
-	if err := json.NewDecoder(response.Body).Decode(&dto); err != nil {
-		return nil, err
-	}
+	err := t.http.Get(url, &dto)
 
-	return dto, nil
+	return dto, err
 }

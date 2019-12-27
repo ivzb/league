@@ -1,6 +1,7 @@
 package http
 
 import (
+	"encoding/json"
 	"fmt"
 	nhttp "net/http"
 	"strings"
@@ -8,14 +9,14 @@ import (
 	"league/config"
 )
 
-var (
+const (
 	fmtBaseURL = "%s/%s"
 	xRiotToken = "X-Riot-Token"
 )
 
 type (
 	HTTP interface {
-		Get(url string) (r *nhttp.Response, err error)
+		Get(url string, response interface{}) error
 	}
 
 	http struct {
@@ -29,7 +30,7 @@ func New(config *config.Config) HTTP {
 	}
 }
 
-func (h *http) Get(url string) (r *nhttp.Response, err error) {
+func (h *http) Get(url string, dto interface{}) error {
 	if !strings.Contains(url, "http") {
 		url = fmt.Sprintf(fmtBaseURL, h.config.BaseURL, url)
 	}
@@ -37,12 +38,20 @@ func (h *http) Get(url string) (r *nhttp.Response, err error) {
 	request, err := nhttp.NewRequest(nhttp.MethodGet, url, nil)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	request.Header.Add(xRiotToken, h.config.ApiKey)
 
 	client := &nhttp.Client{}
 
-	return client.Do(request)
+	response, err := client.Do(request)
+
+	if err != nil {
+		return err
+	}
+
+	defer response.Body.Close()
+
+	return json.NewDecoder(response.Body).Decode(&dto)
 }

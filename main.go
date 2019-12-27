@@ -9,7 +9,10 @@ import (
 	"time"
 )
 
-var configPath = "config.json"
+const (
+	configPath = "config.json"
+	day        = 86400
+)
 
 func main() {
 	di, err := newDI(configPath)
@@ -40,8 +43,8 @@ func main() {
 
 	for _, match := range match.Matches {
 		timestamp := time.Unix(match.Timestamp/1000, 0)
-
-		limit := time.Now().Unix() - (time.Now().Unix() % 86400)
+		now := time.Now().Unix()
+		limit := now - (now % day)
 
 		if timestamp.Unix() >= limit {
 			fmt.Println(timestamp)
