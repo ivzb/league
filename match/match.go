@@ -10,7 +10,8 @@ const byAccountURL = "lol/match/v4/matchlists/by-account/%s"
 
 type (
 	Match interface {
-		ByAccount(id string) (*DTO, error)
+		ByID(id string)
+		ByAccount(accountID string) (*MatchlistDto, error)
 	}
 
 	match struct {
@@ -24,9 +25,9 @@ func New(http http.HTTP) Match {
 	}
 }
 
-func (m *match) ByAccount(id string) (*DTO, error) {
+func (m *match) ByAccount(id string) (*MatchlistDto, error) {
 	url := fmt.Sprintf(byAccountURL, id)
-	var dto *DTO
+	var dto *MatchlistDto
 
 	err := m.http.Get(url, &dto)
 

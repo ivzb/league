@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"league/match"
 	"league/summoner"
 	"league/timeline"
-	"time"
 )
 
 const (
@@ -59,7 +60,15 @@ func main() {
 		champions[champion]++
 	}
 
-	prettyPrint(champions)
+	out := map[string]string{}
+
+	// print wins-loses, and types of games
+
+	for champion, games := range champions {
+		out[champion] = fmt.Sprintf("%d games (%.0f%%)", games, float64(games) / float64(len(match.Matches)) * 100)
+	}
+
+	prettyPrint(out)
 }
 
 func prettyPrint(v interface{}) {
@@ -72,7 +81,7 @@ func prettyPrint(v interface{}) {
 	fmt.Println(string(bytes))
 }
 
-func getTimeline(di *di, match *match.DTO) *timeline.DTO {
+func getTimeline(di *di, match *match.MatchlistDto) *timeline.DTO {
 	timeline, err := di.timeline.ByMatch(match.Matches[0].GameId)
 
 	if err != nil {

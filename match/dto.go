@@ -1,7 +1,23 @@
 package match
 
 type (
-	DTO struct {
+	MatchDto struct {
+		SeasonID int `json:"seasonId,omitempty"`
+		QueueID int `json:"queueId,omitempty"`
+		GameID int64 `json:"gameId,omitempty"`
+		ParticipantIdentities []ParticipantIdentityDto `json:"participantIdentities,omitempty"`
+		GameVersion string `json:"gameVersion,omitempty"`
+		PlatformID string `json:"platformId,omitempty"`
+		GameMode string `json:"gameMode,omitempty"`
+		MapID int `json:"mapId,omitempty"`
+		GameType string `json:"gameType,omitempty"`
+		Teams []TeamStatsDto `json:"teams,omitempty"`
+		Participants []ParticipantDto `json:"participants,omitempty"`
+		GameDuration int64 `json:"gameDuration,omitempty"`
+		GameCreation int64 `json:"gameCreation,omitempty"`
+	}
+
+	MatchlistDto struct {
 		Matches    []MatchReference `json:"matches,omitempty"`
 		TotalGames int              `json:"totalGames,omitempty"`
 		StartIndex int              `json:"startIndex,omitempty"`
