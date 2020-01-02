@@ -3,7 +3,7 @@ package summoner
 import (
 	"fmt"
 
-	"league/http"
+	"league/util/http"
 )
 
 const byNameURL = "lol/summoner/v4/summoners/by-name/%s"
@@ -28,7 +28,7 @@ func (s *summoner) ByName(name string) (*DTO, error) {
 	url := fmt.Sprintf(byNameURL, name)
 	var dto *DTO
 
-	err := s.http.Get(url, &dto)
+	_, err := s.http.Get(url, &dto)
 
 	return dto, err
 }

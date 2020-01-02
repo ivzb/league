@@ -3,15 +3,18 @@ package match
 import (
 	"fmt"
 
-	"league/http"
+	"league/util/http"
 )
 
-const byAccountURL = "lol/match/v4/matchlists/by-account/%s"
+const (
+	byMatchID    = "lol/match/v4/matches/%s"
+	byAccountURL = "lol/match/v4/matchlists/by-account/%s?endIndex=%d"
+)
 
 type (
 	Match interface {
-		ByID(id string)
-		ByAccount(accountID string) (*MatchlistDto, error)
+		ByMatchID(id string) (*MatchDto, error)
+		ByAccountID(accountID string, limit int) (*MatchlistDto, error)
 	}
 
 	match struct {
@@ -25,11 +28,20 @@ func New(http http.HTTP) Match {
 	}
 }
 
-func (m *match) ByAccount(id string) (*MatchlistDto, error) {
-	url := fmt.Sprintf(byAccountURL, id)
+func (m *match) ByMatchID(id string) (*MatchDto, error) {
+	url := fmt.Sprintf(byMatchID, id)
+	var dto *MatchDto
+
+	_, err := m.http.Get(url, &dto)
+
+	return dto, err
+}
+
+func (m *match) ByAccountID(id string, limit int) (*MatchlistDto, error) {
+	url := fmt.Sprintf(byAccountURL, id, limit)
 	var dto *MatchlistDto
 
-	err := m.http.Get(url, &dto)
+	_, err := m.http.Get(url, &dto)
 
 	return dto, err
 }

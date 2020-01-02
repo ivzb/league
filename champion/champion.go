@@ -3,7 +3,7 @@ package champion
 import (
 	"strconv"
 
-	"league/http"
+	"league/util/http"
 )
 
 // get last version from https://ddragon.leagueoflegends.com/api/versions.json
@@ -28,7 +28,7 @@ func New(http http.HTTP) Champion {
 
 func (c *champion) All() (*DTO, error) {
 	var dto *DTO
-	err := c.http.Get(championsURL, &dto)
+	_, err := c.http.Get(championsURL, &dto)
 
 	return dto, err
 }

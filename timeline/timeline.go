@@ -3,7 +3,7 @@ package timeline
 import (
 	"fmt"
 
-	"league/http"
+	"league/util/http"
 )
 
 const byMatchURL = "lol/match/v4/timelines/by-match/%d"
@@ -28,7 +28,7 @@ func (t *timeline) ByMatch(id int64) (*DTO, error) {
 	url := fmt.Sprintf(byMatchURL, id)
 	var dto *DTO
 
-	err := t.http.Get(url, &dto)
+	_, err := t.http.Get(url, &dto)
 
 	return dto, err
 }

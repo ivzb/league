@@ -4,15 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"league/file"
+	"league/util/file"
 )
 
 type (
 	Config struct {
-		BaseURL      string `json:"base_url"`
-		ApiKey       string `json:"api_key"`
-		SummonerName string `json:"summoner_name"`
-		MatchesLimit int    `json:"matches_limit"`
+		BaseURL          string `json:"base_url"`
+		ApiKey           string `json:"api_key"`
+		SummonerName     string `json:"summoner_name"`
+		MatchesLimit     int    `json:"matches_limit"`
+		ParticipantsFile string `json:"participants_file"`
 	}
 )
 

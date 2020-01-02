@@ -3,7 +3,7 @@ package spectator
 import (
 	"fmt"
 
-	"league/http"
+	"league/util/http"
 )
 
 const bySummonerURL = "lol/spectator/v4/active-games/by-summoner/%s"
@@ -28,7 +28,7 @@ func (s *spectator) BySummoner(id string) (*DTO, error) {
 	url := fmt.Sprintf(bySummonerURL, id)
 	var dto *DTO
 
-	err := s.http.Get(url, &dto)
+	_, err := s.http.Get(url, &dto)
 
 	return dto, err
 }

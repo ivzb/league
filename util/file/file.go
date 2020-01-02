@@ -14,7 +14,7 @@ type (
 	file struct{}
 )
 
-func New() *file {
+func New() File {
 	return &file{}
 }
 
