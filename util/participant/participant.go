@@ -18,7 +18,7 @@ func New(file file.File, path string) ([]string, error) {
 	participants := []string{}
 
 	for _, line := range strings.Split(strings.TrimSpace(string(bytes)), newLine) {
-		words := strings.Split(line, " ")
+		words := strings.Split(line, "joined")
 		participants = append(participants, words[0])
 	}
 
