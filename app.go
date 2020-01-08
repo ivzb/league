@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	s "strings"
 
 	"league/champion"
 	"league/league"
@@ -20,8 +21,13 @@ import (
 )
 
 const (
-	soloQ = "RANKED_SOLO_5x5"
-	win   = "Win"
+	soloQ  = "RANKED_SOLO_5x5"
+	win    = "Win"
+	top    = "TOP"
+	jungle = "JUNGLE"
+	mid    = "MID"
+	bottom = "BOTTOM"
+	none   = "NONE"
 )
 
 type app struct {
@@ -95,13 +101,12 @@ func (app *app) run() error {
 
 func (app *app) champions(matchlist *match.MatchlistDto, summoner *summoner.DTO, champs map[int]string) error {
 	games := map[int]int{}
+	lanes := map[string]int{}
 	wins, diffs, err := app.wins(matchlist, summoner)
 
 	if err != nil {
 		return err
 	}
-
-	fmt.Printf("last %d: %s\ntoday's: %s\n", len(matchlist.Matches), diffs[0], diffs[1])
 
 	for _, match := range matchlist.Matches {
 		champion := match.Champion
@@ -111,7 +116,15 @@ func (app *app) champions(matchlist *match.MatchlistDto, summoner *summoner.DTO,
 		}
 
 		games[champion]++
+
+		if _, ok := lanes[match.Lane]; !ok {
+			lanes[match.Lane] = 0
+		}
+
+		lanes[match.Lane]++
 	}
+
+	fmt.Printf("lanes: %s\nlast %d: %s\ntoday's: %s\n", formatLanes(lanes), len(matchlist.Matches), diffs[0], diffs[1])
 
 	out := map[string]string{}
 
@@ -229,4 +242,33 @@ func (app *app) spectate(me *summoner.DTO) (map[string]*summoner.DTO, error) {
 	}
 
 	return participants, nil
+}
+
+func formatLanes(lanes map[string]int) string {
+	laneNames := []string{top, jungle, mid, bottom, none}
+	laneNamesMap := map[string]bool{}
+	total := 0
+
+	for _, laneName := range laneNames {
+		laneNamesMap[laneName] = true
+		total += lanes[laneName]
+	}
+
+	for lane := range lanes {
+		if _, ok := laneNamesMap[lane]; !ok {
+			panic(fmt.Sprintf("lane %s is not defined\n", lane))
+		}
+	}
+
+	result := ""
+
+	for _, laneName := range laneNames {
+		if _, ok := lanes[laneName]; !ok {
+			continue
+		}
+
+		result = fmt.Sprintf("%s, %s: %d (%.0f%%)", result, laneName, lanes[laneName], float64(lanes[laneName])/float64(total)*100)
+	}
+
+	return s.Trim(result, ", ")
 }
