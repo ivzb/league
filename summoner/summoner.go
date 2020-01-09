@@ -1,34 +1,35 @@
 package summoner
 
 import (
-	"fmt"
-
-	"league/util/http"
+	h "league/util/http"
 )
-
-const byNameURL = "lol/summoner/v4/summoners/by-name/%s"
 
 type (
 	Summoner interface {
-		ByName(name string) (*DTO, error)
+		Repo() Repo
+		Web() Web
 	}
 
 	summoner struct {
-		http http.HTTP
+		repo Repo
+		web  Web
 	}
 )
 
-func New(http http.HTTP) Summoner {
+func New(http h.HTTP) Summoner {
+	repo := newRepo(http)
+	web := newWeb(repo)
+
 	return &summoner{
-		http: http,
+		repo: repo,
+		web:  web,
 	}
 }
 
-func (s *summoner) ByName(name string) (*DTO, error) {
-	url := fmt.Sprintf(byNameURL, name)
-	var dto *DTO
+func (s *summoner) Repo() Repo {
+	return s.repo
+}
 
-	_, err := s.http.Get(url, &dto)
-
-	return dto, err
+func (s *summoner) Web() Web {
+	return s.web
 }

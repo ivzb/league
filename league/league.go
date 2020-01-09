@@ -1,34 +1,35 @@
 package league
 
 import (
-	"fmt"
-
-	"league/util/http"
+	h "league/util/http"
 )
-
-const bySummonerIdURL = "lol/league/v4/entries/by-summoner/%s"
 
 type (
 	League interface {
-		BySummonerId(id string) ([]*LeagueDTO, error)
+		Repo() Repo
+		Web() Web
 	}
 
 	league struct {
-		http http.HTTP
+		repo Repo
+		web  Web
 	}
 )
 
-func New(http http.HTTP) League {
+func New(http h.HTTP) League {
+	repo := newRepo(http)
+	web := newWeb(repo)
+
 	return &league{
-		http: http,
+		repo: repo,
+		web:  web,
 	}
 }
 
-func (l *league) BySummonerId(id string) ([]*LeagueDTO, error) {
-	url := fmt.Sprintf(bySummonerIdURL, id)
-	var dto []*LeagueDTO
+func (l *league) Repo() Repo {
+	return l.repo
+}
 
-	_, err := l.http.Get(url, &dto)
-
-	return dto, err
+func (l *league) Web() Web {
+	return l.web
 }

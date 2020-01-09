@@ -30,7 +30,7 @@ const (
 	none   = "NONE"
 )
 
-type app struct {
+type cli struct {
 	file   file.File
 	config *config.Config
 	http   http.HTTP
@@ -43,66 +43,66 @@ type app struct {
 	league    league.League
 }
 
-func newApp(configPath string) (*app, error) {
-	app := &app{}
+func newCli(configPath string) (*cli, error) {
+	cli := &cli{}
 	var err error
 
-	app.file = file.New()
-	app.config, err = config.New(app.file, configPath)
+	cli.file = file.New()
+	cli.config, err = config.New(cli.file, configPath)
 
 	if err != nil {
 		return nil, err
 	}
 
-	app.http = http.New(app.config)
-	app.champion = champion.New(app.http)
-	app.summoner = summoner.New(app.http)
-	app.spectator = spectator.New(app.http)
-	app.match = match.New(app.http)
-	app.timeline = timeline.New(app.http)
-	app.league = league.New(app.http)
+	cli.http = http.New(cli.config)
+	cli.champion = champion.New(cli.http)
+	cli.summoner = summoner.New(cli.http)
+	cli.spectator = spectator.New(cli.http)
+	cli.match = match.New(cli.http, cli.config)
+	cli.timeline = timeline.New(cli.http)
+	cli.league = league.New(cli.http)
 
-	return app, nil
+	return cli, nil
 }
 
-func (app *app) run() error {
-	champs, err := app.champion.Map()
+func (cli *cli) run() error {
+	champs, err := cli.champion.Map()
 
 	if err != nil {
 		return err
 	}
 
-	summonerNames, err := participant.New(app.file, app.config.ParticipantsFile)
+	summonerNames, err := participant.New(cli.file, cli.config.ParticipantsFile)
 
 	if err != nil {
 		return err
 	}
 
 	for _, summonerName := range summonerNames {
-		summoner, err := app.summoner.ByName(summonerName)
+		summoner, err := cli.summoner.Repo().BySummonerName(summonerName)
 
 		if err != nil {
 			return err
 		}
 
-		app.leagues(summoner.ID)
+		cli.leagues(summoner.ID)
 
-		matchlist, err := app.match.ByAccountID(summoner.AccountID, app.config.MatchesLimit)
+		matchlist, err := cli.match.Repo().ByAccountID(summoner.AccountID, cli.config.MatchesLimit)
 
 		if err != nil {
 			return err
 		}
 
-		app.champions(matchlist, summoner, champs)
+		cli.champions(matchlist, summoner, champs)
 	}
 
 	return nil
 }
 
-func (app *app) champions(matchlist *match.MatchlistDto, summoner *summoner.DTO, champs map[int]string) error {
+func (cli *cli) champions(matchlist *match.MatchlistDto, summoner *summoner.DTO, champs map[int]string) error {
 	games := map[int]int{}
 	lanes := map[string]int{}
-	wins, diffs, err := app.wins(matchlist, summoner)
+	wins, diffs, err := cli.wins(matchlist, summoner)
 
 	if err != nil {
 		return err
@@ -137,13 +137,13 @@ func (app *app) champions(matchlist *match.MatchlistDto, summoner *summoner.DTO,
 	return print.Pretty(out)
 }
 
-func (app *app) wins(matchlist *match.MatchlistDto, me *summoner.DTO) (map[int]int, []string, error) {
+func (cli *cli) wins(matchlist *match.MatchlistDto, me *summoner.DTO) (map[int]int, []string, error) {
 	wins := map[int]int{}
 	diff := ""
 	todaysDiff := ""
 
 	for _, m := range matchlist.Matches {
-		match, err := app.match.ByMatchID(strconv.FormatInt(m.GameId, 10))
+		match, err := cli.match.Repo().ByMatchID(strconv.FormatInt(m.GameId, 10))
 
 		if err != nil {
 			return nil, nil, err
@@ -199,8 +199,8 @@ func (app *app) wins(matchlist *match.MatchlistDto, me *summoner.DTO) (map[int]i
 	return wins, []string{diff, todaysDiff}, nil
 }
 
-func (app *app) leagues(summonerID string) error {
-	leagues, err := app.league.BySummonerId(summonerID)
+func (cli *cli) leagues(summonerID string) error {
+	leagues, err := cli.league.Repo().BySummonerId(summonerID)
 
 	if err != nil {
 		return err
@@ -218,12 +218,12 @@ func (app *app) leagues(summonerID string) error {
 	return nil
 }
 
-func (app *app) getTimeline(match *match.MatchlistDto) (*timeline.DTO, error) {
-	return app.timeline.ByMatch(match.Matches[0].GameId)
+func (cli *cli) getTimeline(match *match.MatchlistDto) (*timeline.DTO, error) {
+	return cli.timeline.ByMatch(match.Matches[0].GameId)
 }
 
-func (app *app) spectate(me *summoner.DTO) (map[string]*summoner.DTO, error) {
-	game, err := app.spectator.BySummoner(me.ID)
+func (cli *cli) spectate(me *summoner.DTO) (map[string]*summoner.DTO, error) {
+	game, err := cli.spectator.BySummoner(me.ID)
 
 	if err != nil {
 		return nil, err
@@ -232,7 +232,7 @@ func (app *app) spectate(me *summoner.DTO) (map[string]*summoner.DTO, error) {
 	participants := map[string]*summoner.DTO{}
 
 	for _, participant := range game.Participants {
-		summoner, err := app.summoner.ByName(participant.SummonerName)
+		summoner, err := cli.summoner.Repo().BySummonerName(participant.SummonerName)
 
 		if err != nil {
 			return nil, err

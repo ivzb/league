@@ -1,47 +1,36 @@
 package match
 
 import (
-	"fmt"
-
-	"league/util/http"
-)
-
-const (
-	byMatchID    = "lol/match/v4/matches/%s"
-	byAccountURL = "lol/match/v4/matchlists/by-account/%s?endIndex=%d"
+	"league/util/config"
+	h "league/util/http"
 )
 
 type (
 	Match interface {
-		ByMatchID(id string) (*MatchDto, error)
-		ByAccountID(accountID string, limit int) (*MatchlistDto, error)
+		Repo() Repo
+		Web() Web
 	}
 
 	match struct {
-		http http.HTTP
+		repo Repo
+		web  Web
 	}
 )
 
-func New(http http.HTTP) Match {
+func New(http h.HTTP, config *config.Config) Match {
+	repo := newRepo(http)
+	web := newWeb(repo, config)
+
 	return &match{
-		http: http,
+		repo: repo,
+		web:  web,
 	}
 }
 
-func (m *match) ByMatchID(id string) (*MatchDto, error) {
-	url := fmt.Sprintf(byMatchID, id)
-	var dto *MatchDto
-
-	_, err := m.http.Get(url, &dto)
-
-	return dto, err
+func (m *match) Repo() Repo {
+	return m.repo
 }
 
-func (m *match) ByAccountID(id string, limit int) (*MatchlistDto, error) {
-	url := fmt.Sprintf(byAccountURL, id, limit)
-	var dto *MatchlistDto
-
-	_, err := m.http.Get(url, &dto)
-
-	return dto, err
+func (m *match) Web() Web {
+	return m.web
 }

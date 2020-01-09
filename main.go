@@ -3,13 +3,23 @@ package main
 const configPath = "config.json"
 
 func main() {
-	app, err := newApp(configPath)
+	cli, err := newCli(configPath)
 
 	if err != nil {
 		panic(err)
 	}
 
-	if err := app.run(); err != nil {
+	if err := cli.run(); err != nil {
+		panic(err)
+	}
+
+	web, err := newWeb(configPath)
+
+	if err != nil {
+		panic(err)
+	}
+
+	if err := web.run(); err != nil {
 		panic(err)
 	}
 }
