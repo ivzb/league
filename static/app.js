@@ -1,5 +1,22 @@
+const summoners = document.getElementById("summoners");
+const scan = document.getElementById("scan");
+const info = document.getElementById("info");
+
 function run() {
-    loadSummoner("ivzb")
+    scan.onclick = function (e) {
+        info.innerHTML = "";
+
+        const lines = summoners.value.split("\n");
+
+        for (const i in lines) {
+            const line = lines[i];
+            const words = line.split("joined");
+
+            loadSummoner(words[0].trim());
+        }
+
+        e.preventDefault();
+    };
 }
 
 function loadSummoner(summonerName) {
@@ -7,7 +24,7 @@ function loadSummoner(summonerName) {
         const overview = {};
         overview.id = summoner.id;
         overview.name = summoner.name;
-        overview.level = summoner.level;
+        overview.level = summoner.summonerLevel;
 
         get("leagues?summoner_id=" + overview.id, (leagues) => {
             for (const i in leagues) {
@@ -33,9 +50,24 @@ function loadSummoner(summonerName) {
                 overview.lanes = {};
                 overview.wins = {};
                 overview.history = [];
+                overview.out = {};
 
                 for (const i in matches) {
                     const m = matches[i];
+
+                    const champion = m.champion;
+
+                    if (!overview.games[champion]) {
+                        overview.games[champion] = 0;
+                    }
+
+                    overview.games[champion]++;
+
+                    if (!overview.lanes[m.lane]) {
+                        overview.lanes[m.lane] = 0;
+                    }
+
+                    overview.lanes[m.lane]++;
 
                     get("match?match_id=" + m.gameId, (match) => {
                         for (const j in match.participantIdentities) {
@@ -65,11 +97,8 @@ function loadSummoner(summonerName) {
                                         continue
                                     }
 
-                                    var char = "-";
-
                                     if (team.win === "Win") {
                                         overview.wins[participant.championId]++;
-                                        char = "+"
                                     }
 
                                     overview.history.push({
@@ -86,12 +115,27 @@ function loadSummoner(summonerName) {
                             break;
                         }
                     });
+
+                    // out := map[string]string{}
+                    //
+                    // for champion, games := range games {
+                    //     total := float64(games) / float64(len(matchlist.Matches)) * 100
+                    //     winRate := float64(wins[champion]) / float64(games) * 100
+                    //     out[champs[champion]] = fmt.Sprintf("%d games (%.0f%%) %d wins (%.0f%% win rate)", games, total, wins[champion], winRate)
+                    // }
+
+                    // print.Pretty(out)
                 }
 
                 // console.log(overview);
                 // console.log(matches);
 
+                info.innerHTML += '<div class="summoner">' +
+                    '<p><a href="https://eune.op.gg/summoner/userName=' + overview.name + '" target="_blank">' + overview.name + '</a></p>' +
+                    '<p>Level: ' + overview.level + '</p>'
+                    '</div>';
                 console.log(overview);
+
             });
         });
     });
@@ -99,8 +143,13 @@ function loadSummoner(summonerName) {
 
 function get(url, callback) {
     const request = new XMLHttpRequest();
-    request.addEventListener("load", function() {
+    request.addEventListener("load", function () {
         const response = JSON.parse(this.responseText);
+
+        if (response.error) {
+            console.error(response);
+        }
+
         callback(response);
     });
     request.open("GET", url);

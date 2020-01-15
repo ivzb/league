@@ -3,9 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="app.js"></script>
+    <script src="app.js" defer></script>
+    <style>
+        p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .summoner {
+            margin-top: 16px;
+        }
+    </style>
 </head>
 <body>
+
+<textarea id="summoners" placeholder="summoners..." rows="5" cols="50"></textarea>
+<input type="button" id="scan" value="Scan">
+
+<div id="info"></div>
 
 </body>
 </html>
