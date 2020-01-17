@@ -16,6 +16,7 @@ type (
 		Title   string   `json:"title,omitempty"`
 		Blurb   string   `json:"blurb,omitempty"`
 		Info    Info     `json:"info,omitempty"`
+		Image   Image    `json:"image,omitempty"`
 		Tags    []string `json:"tags,omitempty"`
 		Partype string   `json:"partype,omitempty"`
 		Stats   Stats    `json:"stats,omitempty"`
@@ -26,6 +27,16 @@ type (
 		Defense    int `json:"defense,omitempty"`
 		Magic      int `json:"magic,omitempty"`
 		Difficulty int `json:"difficulty,omitempty"`
+	}
+
+	Image struct {
+		Full   string `json:"full,omitempty"`
+		Sprite string `json:"sprite,omitempty"`
+		Group  string `json:"group,omitempty"`
+		X      int    `json:"x,omitempty"`
+		Y      int    `json:"y,omitempty"`
+		W      int    `json:"w,omitempty"`
+		H      int    `json:"h,omitempty"`
 	}
 
 	Stats struct {

@@ -20,7 +20,7 @@ const (
 
 type (
 	HTTP interface {
-		Get(url string, response interface{}) ([]byte, error)
+		Get(url string, dto interface{}) ([]byte, error)
 	}
 
 	http struct {
@@ -88,6 +88,10 @@ func (h *http) Get(url string, dto interface{}) ([]byte, error) {
 
 			return bytes, fmt.Errorf("URL: %s\nStatus code: %d\nBody: %s", url, response.StatusCode, string(bytes))
 		}
+	}
+
+	if dto == nil {
+		return bytes, nil
 	}
 
 	return bytes, json.Unmarshal(bytes, &dto)

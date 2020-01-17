@@ -15,14 +15,14 @@ type (
 	}
 
 	web struct {
-		repo Repo
+		repo   Repo
 		config *config.Config
 	}
 )
 
 func newWeb(repo Repo, config *config.Config) Web {
 	return &web{
-		repo: repo,
+		repo:   repo,
 		config: config,
 	}
 }

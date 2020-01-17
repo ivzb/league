@@ -54,6 +54,8 @@ func (web *web) run() error {
 	http.HandleFunc("/leagues", web.league.Web().BySummonerId)
 	http.HandleFunc("/match", web.match.Web().ByMatchID)
 	http.HandleFunc("/matches", web.match.Web().ByAccountID)
+	http.HandleFunc("/champions", web.champion.Web().All)
+	http.HandleFunc("/champions-sprite", web.champion.Web().Sprite)
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 	return http.ListenAndServe(":8080", nil)
 }

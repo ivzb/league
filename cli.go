@@ -66,11 +66,13 @@ func newCli(configPath string) (*cli, error) {
 }
 
 func (cli *cli) run() error {
-	champs, err := cli.champion.Map()
+	championsDto, err := cli.champion.Repo().All()
 
 	if err != nil {
 		return err
 	}
+
+	championsMap := mapChampions(championsDto)
 
 	summonerNames, err := participant.New(cli.file, cli.config.ParticipantsFile)
 
@@ -93,13 +95,13 @@ func (cli *cli) run() error {
 			return err
 		}
 
-		cli.champions(matchlist, summoner, champs)
+		cli.champions(matchlist, summoner, championsMap)
 	}
 
 	return nil
 }
 
-func (cli *cli) champions(matchlist *match.MatchlistDto, summoner *summoner.DTO, champs map[int]string) error {
+func (cli *cli) champions(matchlist *match.MatchlistDto, summoner *summoner.DTO, championsMap map[int]string) error {
 	games := map[int]int{}
 	lanes := map[string]int{}
 	wins, diffs, err := cli.wins(matchlist, summoner)
@@ -131,7 +133,7 @@ func (cli *cli) champions(matchlist *match.MatchlistDto, summoner *summoner.DTO,
 	for champion, games := range games {
 		total := float64(games) / float64(len(matchlist.Matches)) * 100
 		winRate := float64(wins[champion]) / float64(games) * 100
-		out[champs[champion]] = fmt.Sprintf("%d games (%.0f%%) %d wins (%.0f%% win rate)", games, total, wins[champion], winRate)
+		out[championsMap[champion]] = fmt.Sprintf("%d games (%.0f%%) %d wins (%.0f%% win rate)", games, total, wins[champion], winRate)
 	}
 
 	return print.Pretty(out)
@@ -271,4 +273,20 @@ func formatLanes(lanes map[string]int) string {
 	}
 
 	return s.Trim(result, ", ")
+}
+
+func mapChampions(dto *champion.DTO) map[int]string {
+	champions := map[int]string{}
+
+	for name, champion := range dto.Data {
+		key, err := strconv.Atoi(champion.Key)
+
+		if err != nil {
+			return nil
+		}
+
+		champions[key] = name
+	}
+
+	return champions
 }

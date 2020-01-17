@@ -3,23 +3,51 @@ const scan = document.getElementById("scan");
 const info = document.getElementById("info");
 
 function run() {
-    scan.onclick = function (e) {
-        info.innerHTML = "";
+    get("champions", (champions) => {
+        const championsData = {};
 
-        const lines = summoners.value.split("\n");
+        for (const name in champions.data) {
+            const champion = champions.data[name];
 
-        for (const i in lines) {
-            const line = lines[i];
-            const words = line.split("joined");
+            if (!champion.image.x) {
+                champion.image.x = 0;
+            }
 
-            loadSummoner(words[0].trim());
+            if (!champion.image.y) {
+                champion.image.y = 0;
+            }
+
+            championsData[champion.key] = {
+                'name': champion.name,
+                'id': champion.key,
+                'image': {
+                    'sprite': champion.image.sprite,
+                    'x': champion.image.x,
+                    'y': champion.image.y,
+                    'w': champion.image.w,
+                    'h': champion.image.h,
+                },
+            };
         }
 
-        e.preventDefault();
-    };
+        scan.onclick = function (e) {
+            info.innerHTML = "";
+
+            const lines = summoners.value.split("\n");
+
+            for (const i in lines) {
+                const line = lines[i];
+                const words = line.split("joined");
+
+                loadSummoner(words[0].trim(), championsData);
+            }
+
+            e.preventDefault();
+        };
+    });
 }
 
-function loadSummoner(summonerName) {
+function loadSummoner(summonerName, champions) {
     get("summoner?name=" + summonerName, (summoner) => {
         const overview = {};
         overview.id = summoner.id;
@@ -129,12 +157,19 @@ function loadSummoner(summonerName) {
 
                 // console.log(overview);
                 // console.log(matches);
+                let games = '';
+
+                for (const championId in overview.games) {
+                    const champion = champions[championId];
+                    games += '<li><div style="background: url(champions-sprite?id=' + champion.image.sprite + ') ' + champion.image.x + 'px ' + champion.image.y + 'px; width: ' + champion.image.w + 'px; height: ' + champion.image.h + 'px;" alt="' + champion.name + '" />' + overview.games[championId] + ' games.</li>';
+                }
 
                 info.innerHTML += '<div class="summoner">' +
                     '<p><a href="https://eune.op.gg/summoner/userName=' + overview.name + '" target="_blank">' + overview.name + '</a></p>' +
-                    '<p>Level: ' + overview.level + '</p>'
+                    '<p>Level: ' + overview.level + '</p>' +
+                    '<p>Games:' +
+                    '<ul>' + games + '</ul>' +
                     '</div>';
-                console.log(overview);
 
             });
         });

@@ -1,56 +1,35 @@
 package champion
 
 import (
-	"strconv"
-
-	"league/util/http"
+	h "league/util/http"
 )
-
-// get last version from https://ddragon.leagueoflegends.com/api/versions.json
-const championsURL = "http://ddragon.leagueoflegends.com/cdn/9.24.2/data/en_US/champion.json"
 
 type (
 	Champion interface {
-		All() (*DTO, error)
-		Map() (map[int]string, error)
+		Repo() Repo
+		Web() Web
 	}
 
 	champion struct {
-		http http.HTTP
+		repo Repo
+		web  Web
 	}
 )
 
-func New(http http.HTTP) Champion {
+func New(http h.HTTP) Champion {
+	repo := newRepo(http)
+	web := newWeb(repo)
+
 	return &champion{
-		http: http,
+		repo: repo,
+		web:  web,
 	}
 }
 
-func (c *champion) All() (*DTO, error) {
-	var dto *DTO
-	_, err := c.http.Get(championsURL, &dto)
-
-	return dto, err
+func (c *champion) Repo() Repo {
+	return c.repo
 }
 
-func (c *champion) Map() (map[int]string, error) {
-	all, err := c.All()
-
-	if err != nil {
-		return nil, err
-	}
-
-	champions := map[int]string{}
-
-	for name, champion := range all.Data {
-		key, err := strconv.Atoi(champion.Key)
-
-		if err != nil {
-			return nil, err
-		}
-
-		champions[key] = name
-	}
-
-	return champions, nil
+func (c *champion) Web() Web {
+	return c.web
 }
